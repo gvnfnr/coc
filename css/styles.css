@@ -145,6 +145,28 @@ body {
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- v2 additions ---------- */
+.res-d { color: #b08fe0; min-width: 95px; }
+.res-t { color: #ffcf6b; min-width: 70px; }
+.res-b { color: #e0c08a; min-width: 64px; }
+.mute { background: rgba(20,28,40,0.82); border: 2px solid rgba(255,255,255,0.25); color: #fff;
+  border-radius: 50%; width: 36px; height: 36px; font-size: 16px; cursor: pointer; }
+.mute:active { transform: scale(0.92); }
+.builders-info { padding: 6px 14px; font-size: 12px; opacity: 0.8; background: rgba(0,0,0,0.2); }
+#spell-section { border-top: 1px solid rgba(255,255,255,0.12); }
+.tray-wrap { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.tray-wrap .troop-tray { position: static; transform: none; pointer-events: auto; }
+.troop-slot.spell { width: 62px; }
+.result-btns { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
+.btn-again { padding: 12px 22px; font-size: 15px; background: linear-gradient(#e0a13d, #b5791a); }
+#rs-trophies.win { color: #7fe07f; } #rs-trophies.lose { color: #ff7a6a; }
+.panel { max-height: 74vh; }
+@media (max-width: 640px) {
+  #topbar { flex-wrap: wrap; justify-content: center; max-width: 96vw; }
+  .res { min-width: 78px; font-size: 12px; padding: 4px 8px; }
+}
+
 @media (max-width: 560px) {
   .panel, .popup { left: 6px; right: 6px; width: auto; }
   .action { padding: 8px 10px; font-size: 11px; }

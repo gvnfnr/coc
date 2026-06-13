@@ -82,8 +82,32 @@ js/
 ```
 
 ## Buildings
-Town Hall · Gold Mine · Elixir Collector · Gold/Elixir Storage · Cannon ·
-Archer Tower · Barracks · Army Camp · Walls
+**Town Hall** (6 levels, gates everything) · **Resources:** Gold Mine, Elixir
+Collector, Dark Elixir Drill, Gold/Elixir/Dark Storage · **Defenses:** Cannon,
+Archer Tower, Mortar (splash + blind spot), Wizard Tower (splash), Air Defense
+(air-only), Hidden Tesla (cloaked) · **Traps:** Bomb, Spring Trap · **Army:**
+Barracks, Army Camp, Spell Factory, Builder's Hut · **Walls**
 
 ## Troops
-Barbarian (cheap melee) · Archer (ranged) · Giant (tanky, targets defenses)
+Barbarian · Archer · Goblin (loot-seeker, 2× vs resources) · Giant (targets
+defenses) · Wall Breaker (busts walls with splash) · Wizard (ranged splash) ·
+Healer (heals your troops) · Balloon (**air**, bombs defenses) · Dragon
+(**air**, splash breath)
+
+## Spells
+Lightning (instant area damage) · Heal (healing zone) · Rage (damage + speed boost)
+
+## Systems that make it feel like the real game
+- **Town Hall gating** — buildings unlock and have per-TH count caps; you progress
+  by upgrading your Town Hall.
+- **Builders** — a limited pool (start with 2, buy more Builder's Huts with gems);
+  construction and upgrades each occupy a builder and take real time.
+- **A\* pathfinding** — ground troops route *around* walls; Wall Breakers seek and
+  detonate them; air units fly over everything.
+- **Air vs. ground + splash** — defenses target by domain (ground/air/any); Mortar,
+  Wizard Tower, bombs, Wizards, Balloons and Dragons all deal area damage.
+- **Trophies & matchmaking** — opponent difficulty scales with your Town Hall and
+  trophy count; win/lose adjusts your trophy total. "Attack Again" for back-to-back raids.
+- **Juice** — rotating turrets that aim, lobbed mortar arcs, explosions, screen
+  shake, deploy poofs, healing/rage auras, floating loot, decorations, and a tiny
+  synthesized **WebAudio** sound engine (🔊 toggle, no audio files).
