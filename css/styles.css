@@ -1,0 +1,151 @@
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #4a7a3a;
+  color: #fff;
+  user-select: none;
+}
+#game-canvas { display: block; position: absolute; inset: 0; background: linear-gradient(#7fc3e0, #9bd0e0); cursor: grab; }
+#game-canvas:active { cursor: grabbing; }
+.hidden { display: none !important; }
+
+/* ---------- Top bar ---------- */
+#topbar {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 10px; align-items: center; z-index: 20;
+}
+.res {
+  background: rgba(20,28,40,0.82); border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 20px; padding: 5px 14px 5px 8px; font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; gap: 6px; min-width: 110px; justify-content: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+.res .ic { font-size: 16px; }
+.res-g { color: #ffd84d; } .res-e { color: #d36bff; } .res-x { color: #6be3ff; min-width: 80px; }
+.title-tag {
+  position: absolute; top: -2px; left: 50%; transform: translate(-50%, -120%);
+  font-size: 11px; opacity: 0.7; letter-spacing: 1px; white-space: nowrap;
+}
+
+/* ---------- Action bar ---------- */
+#actionbar {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 20;
+}
+.action {
+  border: none; border-radius: 14px; padding: 10px 16px; font-size: 13px; font-weight: 700;
+  color: #fff; cursor: pointer; background: linear-gradient(#5a86c4, #3d63a0);
+  box-shadow: 0 4px 0 #2c477a, 0 6px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center; gap: 2px;
+  transition: transform .05s;
+}
+.action .ai { font-size: 18px; }
+.action:active { transform: translateY(3px); box-shadow: 0 1px 0 #2c477a; }
+.action.attack { background: linear-gradient(#e0573d, #b53a26); box-shadow: 0 4px 0 #8a2a1a, 0 6px 10px rgba(0,0,0,0.3); }
+.action.ghost { background: linear-gradient(#6a6a6a, #4a4a4a); box-shadow: 0 4px 0 #333; }
+
+/* ---------- Panels (build / army) ---------- */
+.panel {
+  position: absolute; right: 12px; bottom: 90px; width: 340px; max-height: 70vh;
+  background: rgba(22,30,44,0.95); border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 16px; z-index: 25; overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.panel-head { padding: 12px 14px; font-weight: 800; font-size: 15px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; }
+.panel-head .hint { font-weight: 400; font-size: 11px; opacity: 0.6; }
+.cap-tag { font-size: 12px; font-weight: 400; opacity: 0.85; }
+.list { overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+
+.menu-item {
+  display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 10px;
+  background: rgba(255,255,255,0.06); cursor: pointer; border: 1px solid transparent;
+}
+.menu-item:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); }
+.menu-item.disabled { opacity: 0.45; cursor: not-allowed; }
+.menu-item.disabled:hover { background: rgba(255,255,255,0.06); border-color: transparent; }
+.mi-icon { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.3); }
+.mi-body { flex: 1; min-width: 0; }
+.mi-name { font-weight: 700; font-size: 13px; }
+.mi-count { font-weight: 400; font-size: 11px; opacity: 0.7; }
+.mi-desc { font-size: 11px; opacity: 0.7; margin: 2px 0; line-height: 1.2; }
+.mi-cost { font-size: 12px; font-weight: 700; color: #ffe08a; }
+.mi-cost .warn { color: #ff8a8a; }
+.mi-train { font-size: 24px; font-weight: 800; color: #7fe07f; padding: 0 6px; }
+
+.queue-head { padding: 6px 14px; font-size: 12px; opacity: 0.7; border-top: 1px solid rgba(255,255,255,0.1); }
+.queue { display: flex; gap: 6px; padding: 0 12px 12px; flex-wrap: wrap; min-height: 20px; }
+.queue-empty { font-size: 12px; opacity: 0.5; }
+.queue-chip { width: 38px; height: 38px; border-radius: 8px; border: 2px solid #888; background: rgba(255,255,255,0.08);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
+.queue-chip small { font-size: 9px; font-weight: 400; opacity: 0.8; }
+
+/* ---------- Upgrade popup ---------- */
+.popup {
+  position: absolute; left: 12px; bottom: 90px; width: 300px;
+  background: rgba(22,30,44,0.96); border: 2px solid rgba(255,255,255,0.2); border-radius: 16px;
+  padding: 14px; z-index: 25; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.close { position: absolute; top: 8px; right: 10px; background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; opacity: 0.7; }
+.up-top { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+.up-icon { width: 40px; height: 40px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.3); }
+.up-title { font-weight: 800; font-size: 16px; }
+.up-level { font-size: 12px; opacity: 0.75; }
+.up-stats { font-size: 12px; line-height: 1.5; opacity: 0.9; background: rgba(0,0,0,0.25); padding: 8px 10px; border-radius: 8px; margin-bottom: 10px; }
+.up-actions { display: flex; flex-direction: column; gap: 6px; }
+.btn { border: none; border-radius: 10px; padding: 9px 12px; font-weight: 700; font-size: 12px; cursor: pointer; color: #fff; }
+.btn-up { background: linear-gradient(#3fa34d, #2c7d39); }
+.btn-up.disabled { background: #555; cursor: not-allowed; }
+.btn-finish { background: linear-gradient(#c47ad8, #9b4bb8); }
+.btn-collect { background: linear-gradient(#d6a32a, #b5851a); }
+.btn-move { background: linear-gradient(#5a86c4, #3d63a0); }
+
+/* ---------- Battle HUD ---------- */
+#battle-hud { position: absolute; inset: 0; pointer-events: none; z-index: 22; }
+.battle-stats {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 10px; align-items: center; pointer-events: auto;
+  background: rgba(20,28,40,0.85); padding: 8px 14px; border-radius: 16px; border: 2px solid rgba(255,255,255,0.2);
+}
+.bstat { font-size: 14px; }
+.bstat.stars { color: #ffd84d; font-size: 18px; letter-spacing: 2px; }
+.bstat .dim, .result-stars .dim { color: rgba(255,255,255,0.22); }
+.btn-end { background: linear-gradient(#e0573d, #b53a26); pointer-events: auto; }
+.troop-tray {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 10px; pointer-events: auto;
+}
+.troop-slot {
+  width: 76px; padding: 8px; border-radius: 12px; background: rgba(20,28,40,0.9); border: 3px solid #888;
+  cursor: pointer; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+.troop-slot.active { box-shadow: 0 0 0 3px #fff, 0 4px 10px rgba(0,0,0,0.4); transform: translateY(-4px); }
+.troop-slot.disabled { opacity: 0.4; cursor: not-allowed; }
+.ts-dot { width: 26px; height: 26px; border-radius: 50%; margin: 0 auto 4px; border: 2px solid rgba(255,255,255,0.4); }
+.ts-name { font-size: 11px; font-weight: 700; }
+.ts-count { font-size: 12px; opacity: 0.85; }
+
+/* ---------- Result overlay ---------- */
+.overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); z-index: 40; display: flex; align-items: center; justify-content: center; }
+.result-card {
+  background: linear-gradient(#283a52, #1a2636); border: 3px solid rgba(255,255,255,0.25); border-radius: 20px;
+  padding: 28px 36px; text-align: center; min-width: 300px; box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+#rs-title { font-size: 30px; font-weight: 900; margin-bottom: 8px; }
+#rs-title.victory { color: #ffd84d; text-shadow: 0 2px 0 #b58a00; }
+#rs-title.defeat { color: #ff7a6a; }
+.result-stars { font-size: 44px; color: #ffd84d; letter-spacing: 6px; margin: 6px 0 14px; }
+.result-row { font-size: 14px; margin: 6px 0; opacity: 0.9; }
+.btn-return { margin-top: 18px; padding: 12px 28px; font-size: 15px; background: linear-gradient(#3fa34d, #2c7d39); }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: absolute; bottom: 84px; left: 50%; transform: translate(-50%, 20px);
+  background: rgba(0,0,0,0.85); padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  opacity: 0; transition: all .25s; pointer-events: none; z-index: 50; border: 1px solid rgba(255,255,255,0.2);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 560px) {
+  .panel, .popup { left: 6px; right: 6px; width: auto; }
+  .action { padding: 8px 10px; font-size: 11px; }
+}
