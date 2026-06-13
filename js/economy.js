@@ -1,11 +1,11 @@
-/* economy.js — resource generation, collection, training queue. */
+/* economy.js — resource generation/collection, troop training, spell brewing. */
 (function (COC) {
   'use strict';
 
   const Eco = {};
   const B = COC.Buildings;
+  const State = COC.State;
 
-  // Accumulate production into each collector's internal store (capped). Called every frame.
   Eco.tick = function (state) {
     const now = Date.now();
     for (const b of state.buildings) {
@@ -15,69 +15,77 @@
       const s = B.stats(b);
       const dt = (now - b.lastCollect) / 1000;
       if (dt <= 0) continue;
-      const perSec = s.rate / 3600; // rate is per hour
-      b.stored = Math.min(s.cap, (b.stored || 0) + perSec * dt);
+      b.stored = Math.min(s.cap, (b.stored || 0) + (s.rate / 3600) * dt);
       b.lastCollect = now;
     }
   };
 
-  // How much is sitting in a collector ready to grab.
   Eco.pending = function (b) {
     const def = COC.BUILDINGS[b.type];
     if (def.category !== 'resource' || !def.resource) return 0;
     return Math.floor(b.stored || 0);
   };
 
-  // Collect from a single collector into storage. Returns {kind, amount} or null.
   Eco.collect = function (state, b) {
     const def = COC.BUILDINGS[b.type];
     if (def.category !== 'resource' || !def.resource) return null;
     const amount = Math.floor(b.stored || 0);
     if (amount <= 0) return null;
-    const added = COC.State.addResource(state, def.resource, amount);
-    b.stored = (b.stored || 0) - amount; // even if storage full, drain collector
+    const added = State.addResource(state, def.resource, amount);
+    b.stored = (b.stored || 0) - amount;
     return { kind: def.resource, amount: added };
   };
 
-  // ---- Training queue ----
-  Eco.canTrain = function (state, troopType) {
-    const t = COC.TROOPS[troopType];
-    if (!COC.State.unlockedTroops(state)[troopType]) return { ok: false, reason: 'Locked' };
-    if (!COC.State.canAfford(state, t.cost)) return { ok: false, reason: 'Need elixir' };
-    const cap = COC.State.armyCapacity(state);
-    const used = COC.State.armyUsed(state);
-    if (used + t.housing > cap) return { ok: false, reason: 'Camp full' };
+  // ---- Troops ----
+  Eco.canTrain = function (state, type) {
+    const t = COC.TROOPS[type];
+    if (!State.unlockedTroops(state)[type]) return { ok: false, reason: 'Locked' };
+    if (!State.canAfford(state, t.cost)) return { ok: false, reason: 'Cost' };
+    if (State.armyUsed(state) + t.housing > State.armyCapacity(state)) return { ok: false, reason: 'Camp full' };
     return { ok: true };
   };
-
-  Eco.queueTrain = function (state, troopType) {
-    const check = Eco.canTrain(state, troopType);
-    if (!check.ok) return check;
-    const t = COC.TROOPS[troopType];
-    COC.State.pay(state, t.cost);
-    // queue end time stacks after the last item in queue
+  Eco.queueTrain = function (state, type) {
+    const c = Eco.canTrain(state, type); if (!c.ok) return c;
+    const t = COC.TROOPS[type];
+    State.pay(state, t.cost);
     const last = state.training.length ? state.training[state.training.length - 1].endsAt : Date.now();
-    const start = Math.max(Date.now(), last);
-    state.training.push({ type: troopType, endsAt: start + t.trainTime * 1000 });
+    state.training.push({ type: type, endsAt: Math.max(Date.now(), last) + t.trainTime * 1000 });
     return { ok: true };
   };
-
-  // Move finished training into the ready army.
   Eco.tickTraining = function (state) {
-    const now = Date.now();
-    let changed = false;
+    const now = Date.now(); let changed = false;
     while (state.training.length && state.training[0].endsAt <= now) {
-      const done = state.training.shift();
-      state.army[done.type] = (state.army[done.type] || 0) + 1;
-      changed = true;
+      const d = state.training.shift(); state.army[d.type] = (state.army[d.type] || 0) + 1; changed = true;
+    }
+    return changed;
+  };
+
+  // ---- Spells ----
+  Eco.canBrew = function (state, type) {
+    const sp = COC.SPELLS[type];
+    if (!State.unlockedSpells(state)[type]) return { ok: false, reason: 'Locked' };
+    if (!State.canAfford(state, sp.cost)) return { ok: false, reason: 'Cost' };
+    if (State.spellUsed(state) + sp.housing > State.spellCapacity(state)) return { ok: false, reason: 'Full' };
+    return { ok: true };
+  };
+  Eco.queueBrew = function (state, type) {
+    const c = Eco.canBrew(state, type); if (!c.ok) return c;
+    const sp = COC.SPELLS[type];
+    State.pay(state, sp.cost);
+    const last = state.brewing.length ? state.brewing[state.brewing.length - 1].endsAt : Date.now();
+    state.brewing.push({ type: type, endsAt: Math.max(Date.now(), last) + sp.brewTime * 1000 });
+    return { ok: true };
+  };
+  Eco.tickBrewing = function (state) {
+    const now = Date.now(); let changed = false;
+    while (state.brewing.length && state.brewing[0].endsAt <= now) {
+      const d = state.brewing.shift(); state.spells[d.type] = (state.spells[d.type] || 0) + 1; changed = true;
     }
     return changed;
   };
 
   Eco.totalArmyCount = function (state) {
-    let n = 0;
-    for (const k in state.army) n += state.army[k] || 0;
-    return n;
+    let n = 0; for (const k in state.army) n += state.army[k] || 0; return n;
   };
 
   COC.Economy = Eco;
