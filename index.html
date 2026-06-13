@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Clash of Canvas — a Clash of Clans clone</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- Top resource bar -->
+  <div id="topbar">
+    <div class="res res-g"><span class="ic">🪙</span><span id="res-gold">0</span></div>
+    <div class="res res-e"><span class="ic">💧</span><span id="res-elixir">0</span></div>
+    <div class="res res-x"><span class="ic">💎</span><span id="res-gems">0</span></div>
+    <div class="title-tag">Clash of Canvas</div>
+  </div>
+
+  <!-- Bottom action bar -->
+  <div id="actionbar">
+    <button id="btn-build" class="action"><span class="ai">🛠️</span>Build</button>
+    <button id="btn-army" class="action"><span class="ai">⚔️</span>Army</button>
+    <button id="btn-collect" class="action"><span class="ai">🪙</span>Collect</button>
+    <button id="btn-attack" class="action attack"><span class="ai">⚔️</span>Attack!</button>
+    <button id="btn-reset" class="action ghost"><span class="ai">♻️</span>Reset</button>
+  </div>
+
+  <!-- Build menu -->
+  <div id="build-menu" class="panel hidden">
+    <div class="panel-head">Build &amp; Shop <span class="hint">(press B)</span></div>
+    <div id="build-list" class="list"></div>
+  </div>
+
+  <!-- Army / train menu -->
+  <div id="army-menu" class="panel hidden">
+    <div class="panel-head">Army &amp; Training <span class="hint">(press A)</span>
+      <span class="cap-tag">Camp: <b id="army-cap">0 / 0</b></span>
+    </div>
+    <div id="army-list" class="list"></div>
+    <div class="queue-head">Training queue</div>
+    <div id="train-queue" class="queue"></div>
+  </div>
+
+  <!-- Upgrade popup -->
+  <div id="upgrade-popup" class="popup hidden">
+    <button id="up-close" class="close">✕</button>
+    <div class="up-top"><div id="up-icon" class="up-icon"></div>
+      <div><div id="up-title" class="up-title">Building</div>
+      <div id="up-level" class="up-level">Level 1</div></div>
+    </div>
+    <div id="up-stats" class="up-stats"></div>
+    <div class="up-actions">
+      <button id="up-collect" class="btn btn-collect hidden">Collect</button>
+      <button id="up-upgrade" class="btn btn-up">Upgrade</button>
+      <button id="up-finish" class="btn btn-finish hidden">Finish now</button>
+      <button id="up-move" class="btn btn-move">Move</button>
+    </div>
+  </div>
+
+  <!-- Battle HUD -->
+  <div id="battle-hud" class="hidden">
+    <div class="battle-stats">
+      <div class="bstat">⏱ <b id="bt-timer">3m</b></div>
+      <div class="bstat">💥 <b id="bt-destruction">0%</b></div>
+      <div class="bstat">🪖 <b id="bt-troops">0</b></div>
+      <div class="bstat stars" id="bt-stars">★★★</div>
+      <button id="btn-end-battle" class="btn btn-end">End Battle</button>
+    </div>
+    <div id="troop-tray" class="troop-tray"></div>
+  </div>
+
+  <!-- Battle result -->
+  <div id="result-screen" class="overlay hidden">
+    <div class="result-card">
+      <div id="rs-title" class="victory">Victory!</div>
+      <div id="rs-stars" class="result-stars">★★★</div>
+      <div class="result-row">Destruction: <b id="rs-destruction">0%</b></div>
+      <div class="result-row">Loot: <b id="rs-loot">🪙 0 💧 0</b></div>
+      <button id="btn-return-home" class="btn btn-return">Return Home</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Engine modules (plain ordered scripts; runs from file:// or a server) -->
+  <script src="js/config.js"></script>
+  <script src="js/iso.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/buildings.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/economy.js"></script>
+  <script src="js/troops.js"></script>
+  <script src="js/combat.js"></script>
+  <script src="js/battle.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
